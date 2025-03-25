@@ -2,12 +2,12 @@ package com.cifo.airport.controller;
 
 
 import com.cifo.airport.model.Airport;
-import com.cifo.airport.projection.AirportSummary;
+
 import com.cifo.airport.service.AirportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
