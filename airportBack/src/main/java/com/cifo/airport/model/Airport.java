@@ -2,9 +2,7 @@ package com.cifo.airport.model;
 
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -23,8 +21,14 @@ public class Airport {
     private String city;
     private String country;
 
+    @Getter
+    @Setter
+
     @OneToMany(mappedBy = "departureAirport", cascade = CascadeType.ALL)
     private List<Flight> departingFlights;
+
+    @Getter
+    @Setter
 
     @OneToMany(mappedBy = "arrivalAirport", cascade = CascadeType.ALL)
     private List<Flight> arrivingFlights;

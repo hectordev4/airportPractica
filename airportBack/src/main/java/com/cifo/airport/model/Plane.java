@@ -2,9 +2,7 @@ package com.cifo.airport.model;
 
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -21,8 +19,11 @@ public class Plane {
     private String model;
     private String manufacturer;
     private String registrationNumber;
-    private Integer capacity;
-    private Integer yearOfManufacture;
+    private String capacity;
+    private String yearOfManufacture;
+
+    @Getter
+    @Setter
 
     @OneToMany(mappedBy = "plane", cascade = CascadeType.ALL)
     private List<Flight> flights;
