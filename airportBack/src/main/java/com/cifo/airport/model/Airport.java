@@ -1,35 +1,37 @@
 package com.cifo.airport.model;
 
-
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@Entity
+
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "airports")
 public class Airport {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String name;
-    private String code;
     private String city;
     private String country;
 
-    @Getter
-    @Setter
+    @OneToMany(mappedBy = "airport")
+    private List<Flight> flights;
 
-    @OneToMany(mappedBy = "departureAirport", cascade = CascadeType.ALL)
-    private List<Flight> departingFlights;
-
-    @Getter
-    @Setter
-
-    @OneToMany(mappedBy = "arrivalAirport", cascade = CascadeType.ALL)
-    private List<Flight> arrivingFlights;
+    @Override
+    public String toString() {
+        return "Airport{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", city='" + city + '\'' +
+                ", country='" + country + '\'' +
+                '}';
+    }
 }

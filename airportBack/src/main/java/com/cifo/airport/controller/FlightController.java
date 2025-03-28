@@ -1,68 +1,60 @@
 package com.cifo.airport.controller;
 
-
 import com.cifo.airport.model.Flight;
 import com.cifo.airport.service.FlightService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/flights")
-@CrossOrigin(origins = "http://localhost:3000")
 public class FlightController {
 
     @Autowired
     private FlightService flightService;
 
-//    @Autowired
-//    public FlightController(FlightService flightService) {
-//        this.flightService = flightService;
-//    }
-
     @GetMapping
-    public Page<Flight> getAllFlights(Pageable pageable) {
-        return flightService.findAll(pageable);
+    public List<Flight> findAll() {
+        return flightService.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Flight> getFlightById(@PathVariable Long id) {
-        return flightService.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Flight> findById(@PathVariable Long id) {
+        Optional<Flight> flight = flightService.findById(id);
+        if (flight.isPresent()) {
+            return ResponseEntity.ok(flight.get());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping
-    public Flight createFlight(@RequestBody Flight flight) {
-        return flightService.save(flight);
+    public ResponseEntity<Flight> create(@RequestBody Flight flight) {
+        return ResponseEntity.ok(flightService.save(flight));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Flight> updateFlight(@PathVariable Long id, @RequestBody Flight flight) {
-        return flightService.findById(id)
-                .map(existingFlight -> {
-                    flight.setId(id);
-                    return ResponseEntity.ok(flightService.save(flight));
-                })
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Flight> update(@PathVariable Long id, @RequestBody Flight flight) {
+        Optional<Flight> existingFlight = flightService.findById(id);
+        if (existingFlight.isPresent()) {
+            flight.setId(id);
+            return ResponseEntity.ok(flightService.save(flight));
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteFlight(@PathVariable Long id) {
-        return flightService.findById(id)
-                .map(flight -> {
-                    flightService.deleteById(id);
-                    return ResponseEntity.ok().<Void>build();
-                })
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @GetMapping("/search")
-    public List<Flight> searchFlights(@RequestParam String keyword) {
-        return flightService.searchFlights(keyword);
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        Optional<Flight> flight = flightService.findById(id);
+        if (flight.isPresent()) {
+            flightService.delete(flight.get());
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

@@ -1,69 +1,61 @@
 package com.cifo.airport.controller;
 
-
 import com.cifo.airport.model.Airport;
-
 import com.cifo.airport.service.AirportService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/api/airports")
-@CrossOrigin(origins = "http://localhost:3000")
 public class AirportController {
 
-    private final AirportService airportService;
-
     @Autowired
-    public AirportController(AirportService airportService) {
-        this.airportService = airportService;
-    }
+    private AirportService airportService;
 
     @GetMapping
-    public Page<Airport> getAllAirports(Pageable pageable) {
-        return airportService.findAll(pageable);
+    public List<Airport> findAll() {
+        return airportService.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Airport> getAirportById(@PathVariable Long id) {
-        return airportService.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Airport> findById(@PathVariable Long id) {
+        Optional<Airport> airport = airportService.findById(id);
+        if (airport.isPresent()) {
+            return ResponseEntity.ok(airport.get());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PostMapping
-    public Airport createAirport(@RequestBody Airport airport) {
-        return airportService.save(airport);
+    public ResponseEntity<Airport> create(@RequestBody Airport airport) {
+        return ResponseEntity.ok(airportService.save(airport));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Airport> updateAirport(@PathVariable Long id, @RequestBody Airport airport) {
-        return airportService.findById(id)
-                .map(existingAirport -> {
-                    airport.setId(id);
-                    return ResponseEntity.ok(airportService.save(airport));
-                })
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Airport> update(@PathVariable Long id, @RequestBody Airport airport) {
+        Optional<Airport> existingAirport = airportService.findById(id);
+        if (existingAirport.isPresent()) {
+            airport.setId(id);
+            return ResponseEntity.ok(airportService.save(airport));
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAirport(@PathVariable Long id) {
-        return airportService.findById(id)
-                .map(airport -> {
-                    airportService.deleteById(id);
-                    return ResponseEntity.ok().<Void>build();
-                })
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @GetMapping("/search")
-    public List<Airport> searchAirports(@RequestParam String keyword) {
-        return airportService.searchAirports(keyword);
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        Optional<Airport> airport = airportService.findById(id);
+        if (airport.isPresent()) {
+            airportService.delete(airport.get());
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
