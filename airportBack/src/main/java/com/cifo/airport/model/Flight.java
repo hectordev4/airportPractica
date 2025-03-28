@@ -19,9 +19,11 @@ public class Flight {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String flightNumber;
-    private String status;
     private String departureTime;
     private String arrivalTime;
+
+    @Enumerated(EnumType.STRING) // Stores ENUM as String in DB
+    private FlightStatus status;
 
     @ManyToOne
     @JoinColumn(name = "airport_id", nullable = false)
